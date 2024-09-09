@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Chat</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font: 13px Helvetica, Arial; }
+      form { background: gray; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+      form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; border-radius: 15px; }
+      form button { width: 9%; background: lightgray; border: none; padding: 10px; border-radius: 15px;}
+	  form button:hover { background-color: beige; }
+      #messages { list-style-type: none; margin: 0; padding: 0; height: 300px; overflow: auto; }
+      #messages li { padding: 5px 10px; }
+      #messages li:nth-child(odd) { background: #eee; }
+	  #startbutton { width: 80px; }
+	  #loginlayer { text-align: center; margin-top: 100px; }
+	  #chatlayer { display: none; }
+	  label.msg-label { min-width: 100px; }
+	  div.bc-layer { position: fixed; top: 0; right: 0; margin-right: 15px; margin-top: 10px; padding: 10px; border: 2px solid indianred; background-color: whitesmoke; }
+	  div.bc-layer a { text-decoration: none; }	  
+	  a.close { position: absolute; top: 0%; right: 0%; margin-right: 4px; }
+	  a.close:hover { background-color: darkgray; border-radius: 50%; }
+    </style>
+    <script src="socket.io.js"></script>
+    <script src="jquery-1.11.1.js"></script>
+    <script>		
+      $(function() {
+		var url = location.protocol+"//"+location.host;
+		console.log("url="+url);
+		var socket = io.connect(url);
+		$('form').submit(function() {
+			if($.trim($('#m').val())=="") return false;
+			var msg = { username: $("#loginname").val(), message: $('#m').val() };
+			socket.emit('chat-message', msg);
+			$('#m').val('');
+			return false;
+		});
+		socket.on('chat-message', function(msg) {
+			let label = $("<label></label>").addClass("msg-label").text(msg.username+" : ");
+			let span = $("<span></span>").text(msg.message);
+			$('#messages').append($('<li></li>').append(label).append(span));
+		});
+		socket.on('broadcast-message', function(msg) {
+			console.log("broadcast-message:",msg);
+			let div = $("<div class='bc-layer'></div>");
+			let link = $("<a href=\"javascript:void(0)\" class=\"close\" aria-label=\"close\"></a>").html("&times;");
+			link.click(function() { div.remove(); });
+			let span = $("<span></span>").html(msg.message);
+			div.append(link).append(span).appendTo($("body"));
+		});
+		$("#startbutton").click(function() { 
+			if($.trim($("#loginname").val())=="") {
+				alert("Please specified Login Name");
+				return;
+			}
+			$("#loginlayer").hide();
+			$("#chatlayer").show();
+			$("#m").focus();
+		});
+		$("#loginname").on("keydown", function (e) {
+			if(e.which==13) { $("#startbutton").trigger("click"); }
+		});
+		if($("#loginlayer").is(":visible")) {
+			$("#loginname").focus();
+		}
+	  });
+    </script>
+  </head>
+  <body>
+	<div id="loginlayer">
+		<label>Login Name : </label>
+		<input type="text" id="loginname" />
+		<input type="button" id="startbutton" value="Start"/>
+	</div>
+	<div id="chatlayer">
+    <ul id="messages"></ul>
+    <form action="">
+      <input id="m" autocomplete="off" /><button>Send</button>
+    </form>
+	</div>
+	<!--
+	<div class="bc-layer">
+		<a href="javascript:void(0)">&times;</a>
+		<span>Broadcast Message</span>
+	</div>
+	-->
+  </body>
+</html>
