@@ -2,11 +2,15 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 var http = require('http').Server(app);
-var io = require('socket.io')(http);
+var io = require('socket.io')(http, {
+	cors: { origin: '*', }
+});
 
 const CHAT_PORT = process.env.CHAT_PORT || 9000;
 app.use(cors());
 app.use(express.static('public'));
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 app.get('/', function(req, res) {
 	console.log('get '+__dirname+' - send '+__dirname + '/index.html');
 	res.sendFile(__dirname + '/public/index.html');
@@ -14,7 +18,17 @@ app.get('/', function(req, res) {
 //broadcast by admin
 app.get("/bc/:message",function(req,res) {
 	let message = req.params.message;
-	io.emit("broadcast-message",{username: "admin", message: message});
+	if(message) {
+		io.emit("broadcast-message",{username: "admin", message: message});
+	}
+	res.send("OK");
+});
+app.post("/bc",function(req,res) {
+	console.log("req",req);
+	let message = req.params.message || req.query.message || req.body.message;
+	if(message) {
+		io.emit("broadcast-message",{username: "admin", message: message});
+	}
 	res.send("OK");
 });
 //direct message

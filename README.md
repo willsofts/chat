@@ -22,3 +22,12 @@ Window
 Linux
 
     export CHAT_PORT=9000
+
+## Broadcast
+
+This project contains broadcast API that it can invoke by [curl](https://curl.se/download.html):
+
+* curl http://localhost:8080/bc/BroadcastMessage 
+* curl http://localhost:8080/bc?message=BroadcastMessage
+* curl -X POST http://localhost:8080/bc -d message=BroadcastMessage
+* curl -X POST -H "Content-Type: application/json" "http://localhost:8080/bc" -d "{\"message\":\"BroadcastMessage\"}"
