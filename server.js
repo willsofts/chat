@@ -24,7 +24,6 @@ app.get("/bc/:message",function(req,res) {
 	res.send("OK");
 });
 app.post("/bc",function(req,res) {
-	console.log("req",req);
 	let message = req.params.message || req.query.message || req.body.message;
 	if(message) {
 		io.emit("broadcast-message",{username: "admin", message: message});
