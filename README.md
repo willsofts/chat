@@ -38,3 +38,8 @@ Specified message type, with this user can defined type of message sending.
 * curl http://localhost:9000/bc?message=BroadcastMessage&type=bc
 * curl -X POST http://localhost:9000/bc -d message=BroadcastMessage&type=bc
 * curl -X POST -H "Content-Type: application/json" "http://localhost:9000/bc" -d "{\"message\":\"BroadcastMessage\",\"type\":\"bc\"}"
+
+Send message by app:
+
+* curl -X POST -H "Content-Type: application/json" "http://localhost:9000/app" -d "{\"message\":\"Open App\",\"type\":\"app\", \"app\": { \"programid\":\"exme001\", \"url\":\"\", \"progpath\":\"/exme001/exme001.html\", \"parameters\":\"para=xxx\" }}"
+

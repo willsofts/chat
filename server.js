@@ -15,10 +15,10 @@ app.get('/', function(req, res) {
 	console.log('get '+__dirname+' - send '+__dirname + '/index.html');
 	res.sendFile(__dirname + '/public/index.html');
 });
-function broadcast(message,type) {
+function broadcast(message,type,app) {
 	if(message) {
 		if(!type || type.trim().length == 0) type = "bc";
-		let msg = {type: type, username: "admin", message: message};
+		let msg = {type: type, username: "admin", message: message, app: app};
 		console.log("broadcast:",msg);
 		io.emit("broadcast-message",msg);
 		if(msg.type == "bc") {
@@ -39,6 +39,10 @@ app.post("/bc",function(req,res) {
 app.get("/bcclear",function(req,res) {
 	console.log("bc: clear ",history_broadcast.length);
 	history_broadcast = [];
+	res.send("OK");
+});
+app.post("/app",function(req,res) {
+	broadcast(req.params.message || req.query.message || req.body.message,"app",req.params.app || req.body.app);
 	res.send("OK");
 });
 //direct message
