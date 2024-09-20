@@ -31,3 +31,10 @@ This project contains broadcast API that it can invoke by [curl](https://curl.se
 * curl http://localhost:9000/bc?message=BroadcastMessage
 * curl -X POST http://localhost:9000/bc -d message=BroadcastMessage
 * curl -X POST -H "Content-Type: application/json" "http://localhost:9000/bc" -d "{\"message\":\"BroadcastMessage\"}"
+
+Specified message type, with this user can defined type of message sending.
+
+* curl http://localhost:9000/bc/BroadcastMessage/bc 
+* curl http://localhost:9000/bc?message=BroadcastMessage&type=bc
+* curl -X POST http://localhost:9000/bc -d message=BroadcastMessage&type=bc
+* curl -X POST -H "Content-Type: application/json" "http://localhost:9000/bc" -d "{\"message\":\"BroadcastMessage\",\"type\":\"bc\"}"

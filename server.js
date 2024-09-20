@@ -15,21 +15,25 @@ app.get('/', function(req, res) {
 	console.log('get '+__dirname+' - send '+__dirname + '/index.html');
 	res.sendFile(__dirname + '/public/index.html');
 });
-function broadcast(message) {
+function broadcast(message,type) {
 	if(message) {
-		let msg = {type: "bc", username: "admin", message: message};
+		if(!type || type.trim().length == 0) type = "bc";
+		let msg = {type: type, username: "admin", message: message};
+		console.log("broadcast:",msg);
 		io.emit("broadcast-message",msg);
-		history_broadcast.push(msg);
-		if(history_broadcast.length > 5) history_broadcast.shift();
+		if(msg.type == "bc") {
+			history_broadcast.push(msg);
+			if(history_broadcast.length > 5) history_broadcast.shift();
+		}
 	}
 }
 //broadcast by admin
-app.get("/bc/:message",function(req,res) {
-	broadcast(req.params.message);
+app.get("/bc/:message/:type?",function(req,res) {
+	broadcast(req.params.message,req.params.type);
 	res.send("OK");
 });
 app.post("/bc",function(req,res) {
-	broadcast(req.params.message || req.query.message || req.body.message);
+	broadcast(req.params.message || req.query.message || req.body.message,req.params.type || req.query.type || req.body.type);
 	res.send("OK");
 });
 app.get("/bcclear",function(req,res) {
