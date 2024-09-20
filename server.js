@@ -17,7 +17,7 @@ app.get('/', function(req, res) {
 });
 function broadcast(message) {
 	if(message) {
-		let msg = {username: "admin", message: message};
+		let msg = {type: "bc", username: "admin", message: message};
 		io.emit("broadcast-message",msg);
 		history_broadcast.push(msg);
 		if(history_broadcast.length > 5) history_broadcast.shift();
@@ -41,7 +41,7 @@ app.get("/bcclear",function(req,res) {
 app.get("/direct/:id/:message",function(req,res) {
 	let id = req.params.id;
 	let message = req.params.message;
-	io.to(id).emit("chat-message",{username: "admin", message: message});
+	io.to(id).emit("chat-message",{type: "chat", username: "admin", message: message});
 	res.send("OK");
 });
 io.on('connection', function(socket){
@@ -53,7 +53,7 @@ io.on('connection', function(socket){
 		console.log('chat:: user disconnected :',socket.id);
 	});
 	socket.on('chat-message', function(msg){
-		io.emit('chat-message', msg);
+		io.emit('chat-message', {...msg, type: "chat"});
 	});	
 });
 http.listen(CHAT_PORT, function(){
